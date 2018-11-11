@@ -1,0 +1,14 @@
+numpy
+pytest
+pytest-cov
+pytest-pep8
+ipython
+jupyter
+scipy
+matplotlib
+sphinxcontrib-napoleon
+sphinx
+requests
+flask
+jsonify
+gunicorn
