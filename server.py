@@ -22,7 +22,7 @@ def heart_rate_store(p_id, p_hr):
         p_hr.append(r.get("heart_rate"))
     return p_hr
 
-"""
+
 @app.route("/api/status/<patient_id>", methods=["GET"])
 def status(patient_id, p_id, p_hr, p_age):
     # return whether patient is currently tachycardic based on "previously/
@@ -34,7 +34,7 @@ def status(patient_id, p_id, p_hr, p_age):
         print("This patient is not in the system")
     return
 
-
+"""
 def is_tachycardic(p_hr, p_age):
     return status
 
