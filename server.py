@@ -13,7 +13,7 @@ def new_patient():
     p_hr = []
     return p_id, email, p_age, p_hr
 
-"""
+
 @app.route("/heart_rate", methods=["POST"])
 def heart_rate_store(p_id, p_hr):
     # store HR measurement for user with that email; include current time stamp
@@ -22,7 +22,7 @@ def heart_rate_store(p_id, p_hr):
         p_hr.append(r.get("heart_rate"))
     return p_hr
 
-
+"""
 @app.route("/api/status/<patient_id>", methods=["GET"])
 def status(patient_id, p_id, p_hr, p_age):
     # return whether patient is currently tachycardic based on "previously/
