@@ -34,11 +34,15 @@ def status(patient_id, p_id, p_hr, p_age):
         print("This patient is not in the system")
     return
 
-"""
+
 def is_tachycardic(p_hr, p_age):
+    if p_age > 15 and p_hr > 100:
+        status = "Tachycardic"
+    else:
+        status = "Not Tachycardic"
     return status
 
-
+"""
 @app.route("/api/heart_rate/<patient_id>", methods=["GET"])
 def heart_rate(patient_id):
     # return all the previous heart rate measurements for that patient
