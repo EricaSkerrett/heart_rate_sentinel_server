@@ -3,10 +3,10 @@ import numpy as np
 
 app = Flask(__name__)
 
-p_id = 0;
+p_id = 0
 email = "string"
-p_age = 0; 
-p_hr = 0;
+p_age = 0 
+p_hr = 0
 
 
 @app.route("/api/new_patient", methods=["POST"])
@@ -20,7 +20,7 @@ def new_patient():
     return p_id, email, p_age, p_hr
 
 
-@app.route("/heart_rate", methods=["POST"])
+@app.route("/api/heart_rate", methods=["POST"])
 def heart_rate_store():
     # store HR measurement for user with that email; include current time stamp
     r = request.get_json()
@@ -42,6 +42,7 @@ def status(patient_id):
 
 
 def is_tachycardic(p_hr, p_age):
+    last_p_hr = 
     if p_age > 15 and p_hr > 100:
         status = "Tachycardic"
     else:
@@ -63,7 +64,7 @@ def heart_rate(patient_id):
 def average(patient_id):
     # return the patient's average heart rate over all measurements
     # that are stored for this user
-    avg_hr= np.mean(p_hr)
+    avg_hr = np.mean(p_hr)
     return jsonify(avg_hr)
 
 
