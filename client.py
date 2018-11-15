@@ -5,7 +5,7 @@ inputs = {
     "attending_email": "suyash.kumar@duke.edu",
     "user_age": 50,
 }
-r = requests.post("http://127.0.0.1:5001/new_patient", json=inputs)
+r = requests.post("http://127.0.0.1:5001/api/new_patient", json=inputs)
 # how to put /api in url
 
 
