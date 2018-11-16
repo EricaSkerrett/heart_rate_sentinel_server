@@ -16,7 +16,9 @@ def new_patient():
     check = validate_post(r)
     if check == 0:
         # raise an exception for the user about input
-        a = 1  # placeholder
+        error = "inputs not entered correctly"  # placeholder
+        print("inputs not entered correctly")
+        return jsonify(error)
     p_id = r.get("patient_id")
     global global_M
     if p_id in global_M:
@@ -32,9 +34,21 @@ def new_patient():
 
 
 def validate_post(r):
-    r = 1
-    check = 1  # check is a boolean
-    # may also want to check that the numbers aren't duplicated
+    temp = {
+        "patient_id": "1",
+        "attending_email": "user@duke.edu",
+        "user_age": 1,
+    }
+    temp2 = {
+        "patient_id": "1",
+        "attending_email": "user@duke.edu",
+        "user_age": 1,
+        "heart_rate": [],
+    }
+    if set(r.keys()) == set(temp.keys()) or set(r.keys()) == set(temp2.keys()):
+        check = 1
+    else:
+        check = 0
     return check
 
 
@@ -46,7 +60,9 @@ def heart_rate_store():
     check = validate_post(r)
     if check == 0:
         # raise an exception for the user about input
-        a = 1  # placeholder
+        error = "inputs not entered correctly"
+        print("inputs not entered correctly")
+        return jsonify(error)
     p_id = r.get("patient_id")
     p_hr = (r.get("heart_rate"), stamp)
     global global_M
@@ -76,7 +92,7 @@ def status(patient_id):
         status = is_tachycardic(last_p_hr, p_age)
     else:
         print("Patient not yet entered into system")
-    return jsonify(status)  # return time stamp!
+    return jsonify(status)  # return time stamp as well!
 # Need to setup email
 
 
