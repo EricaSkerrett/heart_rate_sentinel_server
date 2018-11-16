@@ -100,14 +100,21 @@ def is_tachycardic(last_p_hr, p_age):  # could maybe do @parametrize?
         status = "Not Tachycardic"
     return status
 
-"""
+
 @app.route("/api/heart_rate/<patient_id>", methods=["GET"])
 def heart_rate(patient_id):
     # return all the previous heart rate measurements for that patient
-    dict = {
-        "patient_id": p_id,
-        "hr_list": p_hr,
-    }
+    global global_M
+    p_id = patient_id
+    if p_id in global_M:
+        p_info = global_M[p_id]
+        p_hr = p_info["heart_rate"]
+        dict = {
+            "patient_id": p_id,
+            "hr_list": p_hr,
+        }
+    else:
+        dict = "ERROR: Patient not yet entered into system."
     return jsonify(dict)
 
 
@@ -115,11 +122,28 @@ def heart_rate(patient_id):
 def average(patient_id):
     # return the patient's average heart rate over all measurements
     # that are stored for this user
+    global global_M
+    p_id = patient_id
+    if p_id in global_M:
+        p_info = global_M[p_id]
+        p_hr_tup = p_info["heart_rate"]
+        p_hr = [x[0] for x in p_hr_tup]
+        avg_hr = find_avg(p_hr)
+        dict = {
+            "patient_id": p_id,
+            "heart_rate_avg": avg_hr,
+        }
+    else:
+        dict = "ERROR: Patient not yet entered into system."
+    return jsonify(dict)
+
+
+def find_avg(p_hr):
     avg_hr = np.mean(p_hr)
-    return jsonify(avg_hr)
+    return avg_hr
 
 
-
+"""
 @app.route("/api/heart_rate/interval_average", methods=["POST"])
 def interval_average(p_id, ):
     output = {
