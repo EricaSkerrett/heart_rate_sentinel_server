@@ -1,13 +1,9 @@
 from flask import Flask, jsonify, request
 import numpy as np
+import datetime
 
 app = Flask(__name__)
 
-p_id = 0
-email = "string"
-p_age = 0
-p_hr = []
-# should make it a tuple or dictionary because it needs to store time stamps
 global_M = {}
 # Master dictionary to be filled with patients
 
@@ -27,8 +23,12 @@ def new_patient():
         print("patient already entered into system")
     else:
         global_M.update({p_id: r})
+        hr = []
+        p_info = global_M[p_id]
+        p_info["heart_rate"] = hr
+        global_M[p_id] = p_info
     print(global_M)
-    return jsonify(r)
+    return jsonify(p_id)  # not sure why I'm returning this...
 
 
 def validate_post(r):
@@ -38,16 +38,29 @@ def validate_post(r):
     return check
 
 
-"""
 @app.route("/api/heart_rate", methods=["POST"])
 def heart_rate_store():
-    # store HR measurement for user with that email; include current time stamp
+    # store HR measurement for user with that email, include current time stamp
     r = request.get_json()
-    if r.get("patient_id") == p_id:
-        p_hr.append(r.get("heart_rate"))
-    return p_hr
+    stamp = datetime.datetime.now()
+    check = validate_post(r)
+    if check == 0:
+        # raise an exception for the user about input
+        a = 1  # placeholder
+    p_id = r.get("patient_id")
+    p_hr = (r.get("heart_rate"), stamp)
+    global global_M
+    if p_id in global_M:
+        p_info = global_M[p_id]
+        p_info["heart_rate"].append(p_hr)
+        global_M[p_id] = p_info
+    else:
+        print("Patient not yet entered into system")
+    print(global_M)
+    return jsonify(p_id)
 
 
+"""
 @app.route("/api/status/<patient_id>", methods=["GET"])
 def status(patient_id):
     # return whether patient is currently tachycardic based on "previously/
