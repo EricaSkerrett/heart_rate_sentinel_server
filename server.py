@@ -5,10 +5,12 @@ app = Flask(__name__)
 
 p_id = 0
 email = "string"
-p_age = 0 
+p_age = 0
 p_hr = []
-# use global python notation global_x?
-# want to add a list of patients that is then populated
+# should make it a tuple or dictionary because it needs to store time stamps
+global_M = {}
+# Master dictionary to be filled with patients
+
 
 @app.route("/api/new_patient", methods=["POST"])
 def new_patient():
@@ -20,17 +22,18 @@ def new_patient():
         # raise an exception for the user about input
         a = 1  # placeholder
     p_id = r.get("patient_id")
-    email = r.get("attending_email")
-    p_age = r.get("user_age")
-    print(p_id)
-    print(email)
-    print(p_age)
+    global global_M
+    if p_id in global_M:
+        print("patient already entered into system")
+    else:
+        global_M.update({p_id: r})
+    print(global_M)
     return jsonify(r)
 
 
 def validate_post(r):
     r = 1
-    check = 1 # check is a boolean
+    check = 1  # check is a boolean
     # may also want to check that the numbers aren't duplicated
     return check
 
