@@ -14,6 +14,7 @@ def new_patient():
     r = request.get_json()
     # need to check that this request is the correct format (using exception?)
     check = validate_post(r)
+    print(check)
     if check == 0:
         # raise an exception for the user about input
         error = "inputs not entered correctly"  # placeholder
@@ -45,10 +46,15 @@ def validate_post(r):
         "user_age": 1,
         "heart_rate": [],
     }
-    if set(r.keys()) == set(temp.keys()) or set(r.keys()) == set(temp2.keys()):
+    temp3 = {
+            "patient_id": "1",
+            "heart_rate": 400,  # need to get time stamped heart rate
+        }
+    if set(r.keys()) == set(temp.keys()) or set(r.keys()) == set(temp2.keys())\
+            or set(r.keys()) == set(temp3.keys()):
         check = 1
     else:
-        check = 0
+        check = 0  # come back to fix this
     return check
 
 
@@ -143,7 +149,9 @@ def average(patient_id):
     if p_id in global_M:
         p_info = global_M[p_id]
         p_hr_tup = p_info["heart_rate"]
+        print(p_hr_tup)
         p_hr = [x[0] for x in p_hr_tup]
+        print(p_hr)
         avg_hr = find_avg(p_hr)
         dict = {
             "patient_id": p_id,

@@ -10,7 +10,7 @@ r = requests.post("http://127.0.0.1:5001/api/new_patient", json=inputs)
 
 inputs2 = {
     "patient_id": "1",
-    "heart_rate": 100,  # need to get time stamped heart rate
+    "heart_rate": 400,  # need to get time stamped heart rate
 }
 r = requests.post("http://127.0.0.1:5001/api/heart_rate", json=inputs2)
 
