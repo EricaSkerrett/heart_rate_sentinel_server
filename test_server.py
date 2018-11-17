@@ -18,6 +18,8 @@ from server import lookup
                          ])
 def test_validate_post(candidate, expected):
     check = validate_post(candidate)
+    # with pytest.raises(TypeError):
+    #   validate_post(candidate)
     assert check == expected
 
 

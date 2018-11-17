@@ -22,6 +22,8 @@ def new_patient():
         print("inputs not entered correctly")
         return jsonify(error)
     p_id = r.get("patient_id")
+    if type(p_id) is not str:
+        raise TypeError("patient ID must be python string")
     global global_M
     if p_id in global_M:
         print("patient already entered into system")
@@ -71,6 +73,7 @@ def validate_post(r):
         check = 1
     else:
         check = 0
+        # raise NameError("Inputs are not defined")
     return check
 
 
@@ -86,7 +89,12 @@ def heart_rate_store():
         print("inputs not entered correctly")
         return jsonify(error)
     p_id = r.get("patient_id")
-    p_hr = (r.get("heart_rate"), stamp)
+    if type(p_id) is not str:
+        raise TypeError("patient ID must be python string")
+    hr = r.get("heart_rate")
+    if type(hr) is not int:
+        raise TypeError("patient heart rate must be python integer")
+    p_hr = (hr, stamp)
     global global_M
     if p_id in global_M:
         p_info = global_M[p_id]
