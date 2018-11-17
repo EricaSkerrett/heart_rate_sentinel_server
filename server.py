@@ -12,7 +12,8 @@ global_M = {}  # Master dictionary of patients
 
 @app.route("/api/new_patient", methods=["POST"])
 def new_patient():
-    # initialize patient and accept future HR measurements
+    """ initialize patient and accept future HR measurements
+    """
     r = request.get_json()
     check = validate_post(r)
     print(check)
@@ -35,6 +36,16 @@ def new_patient():
 
 
 def validate_post(r):
+    """ checks for correct user input the correct dictionary keys
+
+    This is used in all of the post functions. It will determine if "check"
+    is 1 (correct) or 0 (incorrect).
+
+    :param r: the get request
+    :type r: dict
+    :return: check
+    :rtype: bool
+    """
     temp = {
         "patient_id": "1",
         "attending_email": "user@duke.edu",
@@ -65,7 +76,8 @@ def validate_post(r):
 
 @app.route("/api/heart_rate", methods=["POST"])
 def heart_rate_store():
-    # store HR measurement for user with that email, include current time stamp
+    """store HR measurement for user with that email, include current time stamp
+    """
     r = request.get_json()
     stamp = datetime.datetime.now()
     check = validate_post(r)
@@ -88,8 +100,15 @@ def heart_rate_store():
 
 @app.route("/api/status/<patient_id>", methods=["GET"])
 def status(patient_id):
-    # return whether patient is currently tachycardic based on previously/
-    #  available heart rate and return time stamp of most recent heart rate
+    """return whether patient is currently tachycardic based on previously/
+    available heart rate and return time stamp of most recent heart rate
+
+    :param patient_id: the ID of the patient the user looks up
+    :type patient_id: int
+    :return: status, last_stamp
+    :rtype: str, datetime
+    """
+
     global global_M
     p_id = patient_id
     if p_id in global_M:
@@ -103,11 +122,22 @@ def status(patient_id):
     else:
         print("Patient not yet entered into system")
         status = "none"
-        last_stamp = 0
+        last_stamp = "none"
     return jsonify(status, last_stamp)
 
 
 def is_tachycardic(last_p_hr, p_age, p_id):
+    """ Checks if a patient is tachycardic based on HR
+
+    :param last_p_hr: last heart rate in hr vector
+    :param p_age: patient age
+    :param p_id: patient id
+    :type last_p_hr: int
+    :type p_age: int
+    :type p_id: int
+    :return: tachycardic status
+    :rtype: str
+    """
 
     if p_age < 1 and last_p_hr > 169:
         status = "Tachycardic"
@@ -168,8 +198,9 @@ def heart_rate(patient_id):
 
 @app.route("/api/heart_rate/average/<patient_id>", methods=["GET"])
 def average(patient_id):
-    # return the patient's average heart rate over all measurements
-    # that are stored for this user
+    """return the patient's average heart rate over all measurements
+    that are stored for this user
+    """
     global global_M
     p_id = patient_id
     if p_id in global_M:
@@ -189,12 +220,21 @@ def average(patient_id):
 
 
 def find_avg(p_hr):
+    """ finds the average of a vector
+
+    :param p_hr: vector of patient heart rates
+    :type p_hr: bytearray
+    :return: average heart rate
+    :rtype: float
+    """
     avg_hr = np.mean(p_hr)
     return avg_hr
 
 
 @app.route("/api/heart_rate/interval_average", methods=["POST"])
 def interval_average():
+    """ used to get the average heart rate since a specified time
+    """
     r = request.get_json()
     check = validate_post(r)
     if check == 0:
@@ -218,6 +258,15 @@ def interval_average():
 
 
 def lookup(hr_list, time):
+    """finds the x values that correspond with a given y value range
+
+    :param hr_list: heart rates and time stamps
+    :type hr_list: list of tuples
+    :param time: time of the beginning of the avg interval
+    :type time: datetime
+    :return: list of heart rates to average
+    :rtype: bytearray
+    """
     hr_int = [x for x, y in hr_list if y >= time]
     return hr_int
 
