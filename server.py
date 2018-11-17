@@ -73,7 +73,7 @@ def validate_post(r):
         check = 1
     else:
         check = 0
-        raise NameError("Inputs are not defined")
+        # raise NameError("Inputs are not defined")
     return check
 
 
