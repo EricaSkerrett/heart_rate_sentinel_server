@@ -7,20 +7,17 @@ from sendgrid.helpers.mail import *
 
 app = Flask(__name__)
 
-global_M = {}
-# Master dictionary to be filled with patients
+global_M = {}  # Master dictionary of patients
 
 
 @app.route("/api/new_patient", methods=["POST"])
 def new_patient():
     # initialize patient and accept future HR measurements
     r = request.get_json()
-    # need to check that this request is the correct format (using exception?)
     check = validate_post(r)
     print(check)
     if check == 0:
-        # raise an exception for the user about input
-        error = "inputs not entered correctly"  # placeholder
+        error = "inputs not entered correctly"
         print("inputs not entered correctly")
         return jsonify(error)
     p_id = r.get("patient_id")
@@ -33,8 +30,8 @@ def new_patient():
         p_info = global_M[p_id]
         p_info["heart_rate"] = hr
         global_M[p_id] = p_info
-    print(global_M)
-    return jsonify(p_id)  # not sure why I'm returning this...
+        print(global_M)
+    return jsonify(p_id)
 
 
 def validate_post(r):
@@ -51,13 +48,18 @@ def validate_post(r):
     }
     temp3 = {
             "patient_id": "1",
-            "heart_rate": 400,  # need to get time stamped heart rate
+            "heart_rate": 400,
         }
+    temp4 = {
+        "patient_id": "1",
+        "heart_rate_average_since": "2018-03-09 11:00:36.372339"
+    }
     if set(r.keys()) == set(temp.keys()) or set(r.keys()) == set(temp2.keys())\
-            or set(r.keys()) == set(temp3.keys()):
+            or set(r.keys()) == set(temp3.keys())\
+            or set(r.keys()) == set(temp4.keys()):
         check = 1
     else:
-        check = 0  # come back to fix this
+        check = 0
     return check
 
 
@@ -68,7 +70,6 @@ def heart_rate_store():
     stamp = datetime.datetime.now()
     check = validate_post(r)
     if check == 0:
-        # raise an exception for the user about input
         error = "inputs not entered correctly"
         print("inputs not entered correctly")
         return jsonify(error)
@@ -79,33 +80,34 @@ def heart_rate_store():
         p_info = global_M[p_id]
         p_info["heart_rate"].append(p_hr)
         global_M[p_id] = p_info
+        print(global_M)
     else:
         print("Patient not yet entered into system")
-    print(global_M)
     return jsonify(p_id)
 
 
 @app.route("/api/status/<patient_id>", methods=["GET"])
 def status(patient_id):
-    # return whether patient is currently tachycardic based on "previously/
-    #  available heart rate? and return time stamp of most recent heart rate
+    # return whether patient is currently tachycardic based on previously/
+    #  available heart rate and return time stamp of most recent heart rate
     global global_M
     p_id = patient_id
     if p_id in global_M:
         p_info = global_M[p_id]
         p_hr = p_info["heart_rate"]
-        last_p_hr = p_hr[-1]
-        print(last_p_hr)
-        last_p_hr = last_p_hr[0]
+        last_rec = p_hr[-1]
+        last_p_hr = last_rec[0]
+        last_stamp = last_rec[1]
         p_age = p_info["user_age"]
         status = is_tachycardic(last_p_hr, p_age, p_id)
     else:
         print("Patient not yet entered into system")
-    return jsonify(status)  # return time stamp as well!
-# Need to setup email
+        status = "none"
+        last_stamp = 0
+    return jsonify(status, last_stamp)
 
 
-def is_tachycardic(last_p_hr, p_age, p_id):  # could maybe do @parametrize?
+def is_tachycardic(last_p_hr, p_age, p_id):
 
     if p_age < 1 and last_p_hr > 169:
         status = "Tachycardic"
@@ -191,15 +193,34 @@ def find_avg(p_hr):
     return avg_hr
 
 
-"""
 @app.route("/api/heart_rate/interval_average", methods=["POST"])
-def interval_average(p_id, ):
-    output = {
-        "patient_id": "1",
-        "heart_rate_average_since": "2018-03-09 11:00:36.372339"
-    }
-    return jsonify(output)
-"""
+def interval_average():
+    r = request.get_json()
+    check = validate_post(r)
+    if check == 0:
+        error = "inputs not entered correctly"
+        print("inputs not entered correctly")
+        return jsonify(error)
+    p_id = r.get("patient_id")
+    time = r.get("heart_rate_average_since")
+    time = datetime.datetime.strptime(time, '%Y-%m-%d %H:%M:%S.%f')
+    global global_M
+    if p_id in global_M:
+        p_info = global_M[p_id]
+        hr_list = p_info["heart_rate"]
+        hr_int = lookup(hr_list, time)
+        avg = find_avg(hr_int)
+        print("avg")
+        print(avg)
+    else:
+        avg = "Patient not yet entered into system"
+    return jsonify(avg)
+
+
+def lookup(hr_list, time):
+    hr_int = [x for x, y in hr_list if y >= time]
+    return hr_int
+
 
 if __name__ == "__main__":
     app.run(host="127.0.0.1", port=5001)
