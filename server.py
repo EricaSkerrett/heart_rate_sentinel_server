@@ -1,6 +1,9 @@
 from flask import Flask, jsonify, request
 import numpy as np
 import datetime
+import sendgrid
+import os
+from sendgrid.helpers.mail import *
 
 app = Flask(__name__)
 
@@ -95,14 +98,14 @@ def status(patient_id):
         print(last_p_hr)
         last_p_hr = last_p_hr[0]
         p_age = p_info["user_age"]
-        status = is_tachycardic(last_p_hr, p_age)
+        status = is_tachycardic(last_p_hr, p_age, p_id)
     else:
         print("Patient not yet entered into system")
     return jsonify(status)  # return time stamp as well!
 # Need to setup email
 
 
-def is_tachycardic(last_p_hr, p_age):  # could maybe do @parametrize?
+def is_tachycardic(last_p_hr, p_age, p_id):  # could maybe do @parametrize?
 
     if p_age < 1 and last_p_hr > 169:
         status = "Tachycardic"
@@ -120,7 +123,28 @@ def is_tachycardic(last_p_hr, p_age):  # could maybe do @parametrize?
         status = "Tachycardic"
     else:
         status = "Not Tachycardic"
+    if status == "Tachycardic":
+        send_email(p_id)
     return status
+
+
+def send_email(p_id):
+    global global_M
+    p_info = global_M[p_id]
+    email = p_info["attending_email"]
+    sg = sendgrid.SendGridAPIClient(apikey=os.environ.get('SENDGRID_API_KEY'))
+    from_email = Email("erica.skerrett@duke.edu")
+    to_email = Email(email)
+    subject = "Tachycardic Patient"
+    stamp = datetime.datetime.now()
+    content = Content("text/plain", "Patient {}".format(p_id)+" is\
+     tachycardic as of {}".format(stamp))
+    mail = Mail(from_email, subject, to_email, content)
+    response = sg.client.mail.send.post(request_body=mail.get())
+    print(response.status_code)
+    print(response.body)
+    print(response.headers)
+    return
 
 
 @app.route("/api/heart_rate/<patient_id>", methods=["GET"])
